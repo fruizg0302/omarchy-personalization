@@ -71,6 +71,12 @@ omarchy restart shell
 
 These package commands are instructions, not proof those applications are installed. The Files and Chromium pins depend on their system desktop entries. Downloaded icon URLs may change; the downloader reports failures and leaves existing files alone.
 
+## Apps-menu scroll speed
+
+The Apps submenu uses an independent scroll multiplier of `2`, while browser scrolling retains the global touchpad factor `0.25`. Pixel-based wheel events are doubled; angle-based events use the Qt wheel-line preference and menu row height. Other menu pages retain their default behavior.
+
+To restore this adjustment, run `omarchy plugin clone omarchy.menu`. In the local clone's `Menu.qml`, insert the contents of `menu/apps-scroll.qml.inc` inside `ListView { id: resultList ... }`, after `boundsBehavior` and before `section.property`. Do not modify the packaged file in `/usr/share/omarchy`. Validate the local plugin and restart the shell. The clone command routes the existing menu shortcuts to the local copy; future packaged menu updates need to be merged into the clone manually.
+
 ## Optional ASUS and GPU helpers
 
 `optional/` is separate from the desktop staging tree. Review it for your hardware before installing.
