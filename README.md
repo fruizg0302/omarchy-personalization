@@ -87,6 +87,22 @@ Extensions are not language runtimes. Ruby and Node must be available to the edi
 
 The GPU helper expects the specific existing drop-in `/etc/limine-entry-tool.d/amdgpu-gtt.conf` and refuses an unfamiliar file layout. Presets change the next-boot GTT ceiling, not permanently reserved RAM. They require sudo, `limine-update`, and a reboot. They never edit `/boot/limine.conf`. These hardware settings are not applied by any desktop setup command in this repository.
 
+### Keyboard lighting and activity alerts
+
+[Keyboard Glow](optional/keyboard-glow/README.md) adds twelve lighting modes for
+the FA401EA: steady, native breathing, heartbeat, candlelight, GPU activity,
+music, battery, temperature, typing, focus timer, Morse, and off. Fn+F4 cycles
+forward; Shift+Fn+F4 cycles backward. Workspace, battery, and command-completion
+alerts briefly overlay the selected effect and restore it afterward.
+
+The optional bundle includes the missing FA401EA Aura support entry, a user
+service, a terminal mode picker, and Bash/Ollama completion hooks. Its guide
+contains installation instructions and verification commands. It is not copied
+by `scripts/stage.py`; install it explicitly on compatible hardware. Keyboard
+brightness keys delegate to the service when available and retain their original
+ASUS behavior when it is stopped. No saved lighting state or shell history is
+included.
+
 ## Privacy and maintenance
 
 Only selected text files are tracked. No browser profiles, logins, emails, local hostname, home username, screenshots, model files, private source trees, shell history, or credentials are included. Existing private dotfiles remain separate. This is a reviewed snapshot, not an automatic home-directory sync.

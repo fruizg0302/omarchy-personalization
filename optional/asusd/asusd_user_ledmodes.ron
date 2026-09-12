@@ -1,0 +1,13 @@
+// Model override for the unlisted FA401EA keyboard.
+// Static/Breathe cycling verified; user reports visible breathing, 2026-09-11.
+([
+    (
+        device_name: "FA401EA",
+        product_id: "tuf",
+        layout_name: "Default",
+        basic_modes: [Static, Breathe],
+        basic_zones: [],
+        advanced_type: r#None,
+        power_zones: [Keyboard],
+    ),
+])

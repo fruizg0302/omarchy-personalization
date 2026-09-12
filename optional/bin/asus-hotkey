@@ -14,6 +14,10 @@ flock -x 9
 case "$1" in
   keyboard)
     [[ $# == 2 ]] || usage
+    if [[ -S ${XDG_RUNTIME_DIR}/keyboard-glow/control.sock ]] &&
+       "$HOME/.local/bin/glow" brightness "$2" --quiet; then
+      exit 0
+    fi
     current=$(asusctl leds get)
     case "$current" in
       *'Current keyboard led brightness: Off'*) level=0 ;;

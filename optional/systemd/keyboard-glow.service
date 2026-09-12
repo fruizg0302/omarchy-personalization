@@ -1,0 +1,16 @@
+[Unit]
+Description=Keyboard lighting effects and activity alerts
+After=graphical-session.target
+PartOf=graphical-session.target
+ConditionPathExists=/sys/class/leds/asus::kbd_backlight/brightness
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.local/share/keyboard-glow/glow.py daemon
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=8
+UMask=0077
+
+[Install]
+WantedBy=graphical-session.target
