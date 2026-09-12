@@ -71,6 +71,12 @@ omarchy restart shell
 
 These package commands are instructions, not proof those applications are installed. The Files and Chromium pins depend on their system desktop entries. Downloaded icon URLs may change; the downloader reports failures and leaves existing files alone.
 
+## Zed development support
+
+`config/zed/settings.json` auto-installs Ruby, Elixir, Dockerfile, TOML, and HTML extensions. JavaScript/TypeScript and YAML support are built into Zed. Ruby uses Ruby LSP as its primary language server; Elixir keeps the extension's default ElixirLS. Merge these settings into an existing Zed configuration rather than replacing unrelated preferences.
+
+Extensions are not language runtimes. Ruby and Node must be available to the editor. On Arch, `sudo pacman -S --needed elixir` installs Elixir and its packaged Erlang dependency; for projects with pinned versions, use your version manager instead. Language servers are downloaded or resolved when relevant project files are opened, and may need project dependencies. No application login or private project settings are included.
+
 ## Optional ASUS and GPU helpers
 
 `optional/` is separate from the desktop staging tree. Review it for your hardware before installing.

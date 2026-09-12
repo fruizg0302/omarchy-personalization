@@ -1,0 +1,14 @@
+{
+  "auto_install_extensions": {
+    "html": true,
+    "ruby": true,
+    "elixir": true,
+    "dockerfile": true,
+    "toml": true
+  },
+  "languages": {
+    "Ruby": {
+      "language_servers": ["ruby-lsp", "!solargraph", "!rubocop", "..."]
+    }
+  }
+}

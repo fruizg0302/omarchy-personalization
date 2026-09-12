@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Zed
-Exec=zed
+Exec=zeditor %U
 Icon=@HOME@/.local/share/icons/dock-apps/zed.png
 Terminal=false
 StartupNotify=false
