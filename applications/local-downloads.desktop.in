@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Downloads
+Comment=Open the Downloads folder
+Exec=personalization-downloads
+Icon=folder-download
+Terminal=false
+Categories=System;FileManager;

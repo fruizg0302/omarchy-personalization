@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "local.workspace-overview",
+  "name": "Current Workspace Overview",
+  "version": "1.0.0",
+  "description": "Window thumbnails for the current workspace, opened by a four-finger swipe up.",
+  "kinds": ["overlay"],
+  "entryPoints": {"overlay": "Overview.qml"}
+}

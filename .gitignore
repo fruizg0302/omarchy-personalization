@@ -1,0 +1,12 @@
+# Never collect workstation state or credentials here.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.bak
+*.bak.*
+__pycache__/
+stage/
+downloads/
+.DS_Store

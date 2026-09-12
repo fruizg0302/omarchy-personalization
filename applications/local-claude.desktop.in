@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Claude
+Exec=omarchy launch webapp https://claude.ai/
+Icon=@HOME@/.local/share/icons/dock-apps/claude.svg
+Terminal=false
+StartupNotify=false

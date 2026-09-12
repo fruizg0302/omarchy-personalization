@@ -1,0 +1,27 @@
+{
+  "pinned": [
+    "org.gnome.Nautilus",
+    "local-ghostty",
+    "chromium",
+    "local-mail",
+    "local-calendar",
+    "local-notion",
+    "HEY",
+    "local-hey-calendar",
+    "local-slack",
+    "Discord",
+    "local-chatgpt",
+    "local-claude",
+    "local-zed",
+    "local-apple-music",
+    "local-apple-podcasts",
+    "YouTube",
+    "local-brain-fm",
+    "local-settings",
+    "Docker",
+    "WhatsApp",
+    "local-applications",
+    "local-downloads",
+    "local-trash"
+  ]
+}

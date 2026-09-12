@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=ChatGPT
+Exec=omarchy launch webapp https://chatgpt.com/
+Icon=/usr/share/icons/hicolor/256x256/apps/chatgpt.png
+Terminal=false
+StartupNotify=false

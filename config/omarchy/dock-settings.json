@@ -1,0 +1,12 @@
+{
+  "dockEnabled": true,
+  "visibilityMode": "always",
+  "overlayMode": false,
+  "visibleWorkspace": "all",
+  "glassmorphism": true,
+  "blurOpacity": 0.68,
+  "showBadges": true,
+  "widgetsEnabled": false,
+  "widgetPosition": "left",
+  "dockWidgets": []
+}

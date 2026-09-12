@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Slack
+Exec=omarchy launch webapp https://app.slack.com/
+Icon=@HOME@/.local/share/icons/dock-apps/slack.png
+Terminal=false
+StartupNotify=false

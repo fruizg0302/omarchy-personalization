@@ -1,0 +1,104 @@
+diff --git a/DockItem.qml b/DockItem.qml
+index 55c19bd..0756880 100644
+--- a/DockItem.qml
++++ b/DockItem.qml
+@@ -27,6 +27,17 @@ Item {
+     readonly property bool isAnyDragging: dockDragActiveIndex >= 0 || isDragging
+     property bool showBadges: true
+ 
++    DockTooltip {
++        target: root
++        // The dock sits opposite the main bar; position labels toward the screen.
++        position: root.barPosition === "top" ? "bottom"
++                  : root.barPosition === "bottom" ? "top"
++                  : root.barPosition === "left" ? "right" : "left"
++        text: root.itemData ? (root.itemData.name || root.itemData.appId || "") : ""
++        active: root.visible && mouseArea.containsMouse && !mouseArea.pressed
++                && !root.isAnyDragging && !root.isEditMode && !root.isSelected
++    }
++
+     signal itemLeftClicked(var itemData)
+     signal itemRightClicked(var itemData, var itemItem)
+     signal moveRequested(int fromIndex, int toIndex)
+@@ -187,7 +198,7 @@ Item {
+         height: root.iconBaseSize
+         z: 1
+ 
+-        scale: (root.isDragging ? 1.15 : (root.isEditMode ? 0.82 : (root.isMergeTarget ? 0.94 : (root.isPressVisualActive ? 0.92 : (mouseArea.containsMouse ? 1.10 : 1.0))))) * root.clickScaleFactor
++        scale: (root.isDragging ? 1.15 : (root.isEditMode ? 0.82 : (root.isMergeTarget ? 0.94 : (root.isPressVisualActive ? 0.92 : (mouseArea.containsMouse ? 1.95 : 1.0))))) * root.clickScaleFactor
+         opacity: root.iconsReady ? (root.isDragging ? 0.92 : 1.0) : 0.0
+ 
+         Behavior on scale {
+diff --git a/DockMatcher.js b/DockMatcher.js
+index f00d0c3..9cd72f2 100644
+--- a/DockMatcher.js
++++ b/DockMatcher.js
+@@ -1716,5 +1716,17 @@ function buildDockItems(pinnedList, toplevelsList, activeToplevel, desktopEntrie
+         });
+     }
+ 
+-    return items;
++    // Keep this machine's utility shortcuts after running applications.
++    var utilityIds = ["local-applications", "local-downloads", "local-trash"];
++    var mainItems = [];
++    var utilityItems = {};
++    for (var ui = 0; ui < items.length; ui++) {
++        var utilityId = stripDesktop(items[ui].appId);
++        if (utilityIds.indexOf(utilityId) !== -1) utilityItems[utilityId] = items[ui];
++        else mainItems.push(items[ui]);
++    }
++    for (var uj = 0; uj < utilityIds.length; uj++) {
++        if (utilityItems[utilityIds[uj]]) mainItems.push(utilityItems[utilityIds[uj]]);
++    }
++    return mainItems;
+ }
+diff --git a/DockPanel.qml b/DockPanel.qml
+index 224d9a4..b5e84f9 100644
+--- a/DockPanel.qml
++++ b/DockPanel.qml
+@@ -54,6 +54,7 @@ Item {
+ 
+     // Live Bar & Tray Transparency Tracking (Auto-syncs dock with bar & tray glassmorphism)
+     readonly property bool isBarTransparent: {
++        if (root.glassmorphism) return true
+         if (shell && shell.bar && typeof shell.bar.transparent === "boolean") return shell.bar.transparent
+         return detectedBarTransparent
+     }
+@@ -2564,7 +2565,9 @@ Item {
+                 // lets fullscreen content win.
+                 WlrLayershell.layer: root.autohide ? WlrLayer.Overlay : WlrLayer.Top
+                 WlrLayershell.keyboardFocus: root.isEditMode ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+-                exclusionMode: root.dockRevealed && !root.overlayMode ? ExclusionMode.Auto : ExclusionMode.Ignore
++                // Bring tiled windows 6 px closer, halving the current 12 px visual gap.
++                exclusiveZone: (root.isVertical ? implicitWidth : implicitHeight) - 6
++                exclusionMode: root.dockRevealed && !root.overlayMode ? ExclusionMode.Normal : ExclusionMode.Ignore
+                 color: "transparent"
+                 surfaceFormat.opaque: false
+ 
+@@ -2629,7 +2632,7 @@ Item {
+             }
+ 
+             color: root.isBarTransparent
+-                ? Util.alpha(Color.bar.background, 0.25)
++                ? Util.alpha(Color.bar.background, root.glassmorphism ? root.blurOpacity : 0.25)
+                 : Color.bar.background
+             border.width: (Border.canUseNative(root.dockBorderSpec) && !root.isBarTransparent) ? Border.uniformWidth(root.dockBorderSpec) : 0
+             border.color: (Border.canUseNative(root.dockBorderSpec) && !root.isBarTransparent) ? Border.color(root.dockBorderSpec) : "transparent"
+@@ -2896,6 +2899,17 @@ Item {
+ 
+                     DockItem {
+                         itemData: modelData
++                        // Separate Applications, Downloads, and Trash from apps.
++                        Rectangle {
++                            visible: modelData.appId === "local-applications"
++                            x: root.isVertical ? 9 : 0
++                            y: root.isVertical ? 0 : 9
++                            width: root.isVertical ? root.slotSize - 18 : 2
++                            height: root.isVertical ? 2 : root.slotSize - 18
++                            color: Color.bar.text
++                            opacity: 0.7
++                            z: 250
++                        }
+                         itemIndex: index
+                         totalCount: root.dockItems.length
+                         barPosition: root.barPosition

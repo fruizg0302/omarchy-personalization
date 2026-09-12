@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Omarchy Settings
+Exec=omarchy menu toggle
+Icon=preferences-system
+Terminal=false
+StartupNotify=false

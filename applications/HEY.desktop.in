@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=HEY Mail
+Exec=omarchy-webapp-handler-hey %u
+Terminal=false
+Type=Application
+Icon=@HOME@/.local/share/icons/dock-apps/hey.png
+StartupNotify=true
+MimeType=x-scheme-handler/mailto

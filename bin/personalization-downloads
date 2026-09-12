@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+download_dir="$(xdg-user-dir DOWNLOAD 2>/dev/null || true)"
+exec xdg-open "${download_dir:-$HOME/Downloads}"

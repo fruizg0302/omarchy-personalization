@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# Shared GPU memory is allocated on demand. These presets change its ceiling
+# at the next boot; they do not reserve RAM or unload running models.
+# This machine's existing GPU boot options live in this Limine drop-in.
+_gpu_memory_preset() {
+  case "${1:-}" in
+    8|56) ;;
+    *) printf 'Usage: _gpu_memory_preset {8|56}\n' >&2; return 2 ;;
+  esac
+  local gpu_gib="$1"
+  sudo /usr/bin/python3 - "$gpu_gib" <<'PY'
+import os
+from pathlib import Path
+import re
+import shutil
+import sys
+import time
+
+gib = int(sys.argv[1])
+if gib not in (8, 56):
+    sys.exit('Only 8 and 56 GiB presets are supported.')
+path = Path('/etc/limine-entry-tool.d/amdgpu-gtt.conf')
+original = path.read_text()
+active = '\n'.join(line for line in original.splitlines()
+                   if line.strip() and not line.lstrip().startswith('#'))
+if not re.fullmatch(r'KERNEL_CMDLINE\[default\]\+="\s*amdgpu\.gttsize=\d+\s+ttm\.pages_limit=\d+\s*"', active):
+    sys.exit('GPU Limine configuration has changed; refusing to overwrite it.')
+backup = path.with_name(path.name + '.bak-' + str(time.time_ns()))
+shutil.copy2(path, backup)
+pages = gib * 1024**3 // os.sysconf('SC_PAGE_SIZE')
+path.write_text(
+    '# Shared GPU memory ceiling, allocated on demand, not reserved RAM.\n'
+    '# Managed by ~/.local/bin/gpu-memory (gpu-8g / gpu-56g).\n'
+    '# Apply with sudo limine-update, then reboot.\n'
+    f'KERNEL_CMDLINE[default]+=" amdgpu.gttsize={gib * 1024} ttm.pages_limit={pages}"\n'
+)
+print(f'Set next-boot GPU GTT ceiling to {gib} GiB. Backup: {backup}')
+PY
+  local gpu_result=$?
+  (( gpu_result == 0 )) || return "$gpu_result"
+  if sudo limine-update; then
+    printf 'GPU ceiling configured: %s GiB. Reboot when ready to apply it.\n' "$gpu_gib"
+  else
+    printf 'Boot update failed. Configuration was saved, but do not assume it is applied.\nRun sudo limine-update successfully before rebooting.\n' >&2
+    return 1
+  fi
+}
+
+_gpu_memory_status() {
+  /usr/bin/python3 - <<'PY'
+from pathlib import Path
+for device in sorted(Path('/sys/class/drm').glob('card[0-9]*/device')):
+    total = device / 'mem_info_gtt_total'
+    if not total.exists():
+        continue
+    print(f'{device.parent.name} current GPU memory (GiB):')
+    for label, name in [('GTT ceiling', 'mem_info_gtt_total'),
+                        ('GTT used', 'mem_info_gtt_used'),
+                        ('VRAM total', 'mem_info_vram_total'),
+                        ('VRAM used', 'mem_info_vram_used')]:
+        try:
+            print(f'  {label}: {int((device / name).read_text()) / 1024**3:.2f}')
+        except OSError:
+            print(f'  {label}: unavailable')
+print('Configured boot options (apply after limine-update + reboot):')
+for line in Path('/etc/limine-entry-tool.d/amdgpu-gtt.conf').read_text().splitlines():
+    if line.startswith('KERNEL_CMDLINE'):
+        print(' ', line)
+PY
+  free -h
+}
+
+case "${1:-status}" in
+  status) _gpu_memory_status ;;
+  8|56) _gpu_memory_preset "$1" ;;
+  -h|--help) printf 'Usage: gpu-memory [status|8|56]\nPresets require sudo and a reboot; status is read-only.\n' ;;
+  *) printf 'Usage: gpu-memory [status|8|56]\n' >&2; exit 2 ;;
+esac

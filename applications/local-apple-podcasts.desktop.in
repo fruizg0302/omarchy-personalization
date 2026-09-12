@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Apple Podcasts
+Exec=omarchy launch webapp https://podcasts.apple.com/
+Icon=@HOME@/.local/share/icons/dock-apps/apple-podcasts.png
+Terminal=false
+StartupNotify=false

@@ -1,0 +1,26 @@
+diff --git a/Switcher.qml b/Switcher.qml
+index 09b07d3..e29bd03 100644
+--- a/Switcher.qml
++++ b/Switcher.qml
+@@ -1,5 +1,6 @@
+ import QtQuick
+ import Quickshell
++import Quickshell.Io
+ import Quickshell.Hyprland
+ import Quickshell.Wayland
+ import qs.Commons
+@@ -30,6 +31,14 @@ Item {
+   // openPanelIds; we must not fight it, so `opened` is only our UI state.
+   property bool opened: false
+   property bool cycleMode: false
++
++  // Compositor-side release bindings also work when Qt misses the modifier event.
++  IpcHandler {
++    target: "personal-omaswitch"
++    function confirm(): void {
++      if (root.opened && root.cycleMode) root.focusSelected()
++    }
++  }
+   property string filterText: ""
+   property int selectedIndex: 0
+ 

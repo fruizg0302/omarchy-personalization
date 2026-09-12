@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Apple Music
+Exec=omarchy launch webapp https://music.apple.com/
+Icon=@HOME@/.local/share/icons/dock-apps/apple-music.png
+Terminal=false
+StartupNotify=false

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Brain.fm
+Exec=omarchy launch webapp https://www.brain.fm/
+Icon=@HOME@/.local/share/icons/dock-apps/brain-fm.png
+Terminal=false
+StartupNotify=false

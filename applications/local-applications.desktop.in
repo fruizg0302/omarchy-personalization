@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Applications
+Exec=omarchy menu toggle apps
+Icon=view-app-grid
+Terminal=false
+StartupNotify=false

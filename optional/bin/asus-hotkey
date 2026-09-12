@@ -1,0 +1,54 @@
+#!/bin/bash
+# ASUS hardware controls with Omarchy on-screen feedback.
+set -euo pipefail
+
+usage() {
+  echo 'Usage: asus-hotkey keyboard <up|down|cycle> | profile' >&2
+  exit 2
+}
+
+[[ $# -ge 1 ]] || usage
+exec 9>"${XDG_RUNTIME_DIR:?}/asus-hotkey.lock"
+flock -x 9
+
+case "$1" in
+  keyboard)
+    [[ $# == 2 ]] || usage
+    current=$(asusctl leds get)
+    case "$current" in
+      *'Current keyboard led brightness: Off'*) level=0 ;;
+      *'Current keyboard led brightness: Low'*) level=1 ;;
+      *'Current keyboard led brightness: Med'*) level=2 ;;
+      *'Current keyboard led brightness: High'*) level=3 ;;
+      *) printf 'Cannot read ASUS keyboard brightness: %s\n' "$current" >&2; exit 1 ;;
+    esac
+    case "$2" in
+      up) level=$((level < 3 ? level + 1 : 3)) ;;
+      down) level=$((level > 0 ? level - 1 : 0)) ;;
+      cycle) level=$(((level + 1) % 4)) ;;
+      *) usage ;;
+    esac
+    levels=(off low med high)
+    asusctl leds set "${levels[level]}"
+    omarchy osd -i keyboard -p "$((level * 100 / 3))"
+    ;;
+  profile)
+    [[ $# == 1 ]] || usage
+    asusctl profile next
+    profile=$(asusctl profile get)
+    profile=$(sed -n 's/^Active profile: //p' <<<"$profile")
+    [[ -n $profile ]] || { echo 'Cannot read ASUS performance profile' >&2; exit 1; }
+    # Omarchy reads power-profiles-daemon, not ASUS's platform profile.
+    # Keep its CPU policy, menu, and AC/battery preference in sync.
+    case "$profile" in
+      Quiet|LowPower) desktop_profile=power-saver ;;
+      Balanced) desktop_profile=balanced ;;
+      Performance) desktop_profile=performance ;;
+      *) printf 'Unknown ASUS profile: %s\n' "$profile" >&2; exit 1 ;;
+    esac
+    omarchy powerprofiles set autodetect "$desktop_profile"
+    # asus-profile-notify.service reports actual profile changes, including
+    # firmware-handled hotkeys, without duplicate notifications here.
+    ;;
+  *) usage ;;
+esac

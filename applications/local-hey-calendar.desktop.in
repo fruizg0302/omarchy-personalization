@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=HEY Calendar
+Exec=omarchy launch webapp https://app.hey.com/calendar
+Icon=/usr/share/icons/AdwaitaLegacy/48x48/mimetypes/x-office-calendar.png
+Terminal=false
+StartupNotify=false

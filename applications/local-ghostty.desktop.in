@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Ghostty
+Exec=ghostty
+Icon=@HOME@/.local/share/icons/dock-apps/ghostty.png
+Terminal=false
+StartupNotify=false

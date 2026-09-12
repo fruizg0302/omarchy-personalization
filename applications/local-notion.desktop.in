@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Notion
+Exec=omarchy launch webapp https://www.notion.so/
+Icon=@HOME@/.local/share/icons/dock-apps/notion.png
+Terminal=false
+StartupNotify=false

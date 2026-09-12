@@ -1,0 +1,22 @@
+[
+  {
+    "id": "rosakodu.dock",
+    "url": "https://github.com/rosakodu/omarchy-dock.git",
+    "commit": "a1e70d15c468710d45e02238680e6cb95d1aea2d"
+  },
+  {
+    "id": "piyush.omaswitch",
+    "url": "https://github.com/piyush97/omaswitch.git",
+    "commit": "0afaa7fe83a93db16df5dcee1dd0ca8015a37d6b"
+  },
+  {
+    "id": "asusctl",
+    "url": "https://github.com/PhilippTomac/omarchy-asusctl.git",
+    "commit": "e522a8a345e8fe32e80af3597f76d21192fed835"
+  },
+  {
+    "id": "io.github.steveclarke.headroom",
+    "url": "https://github.com/steveclarke/omarchy-headroom.git",
+    "commit": "7fe890dd48aa74f04de629188f5afcc4b7d06d3f"
+  }
+]
