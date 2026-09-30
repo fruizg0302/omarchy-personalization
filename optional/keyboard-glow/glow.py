@@ -115,6 +115,7 @@ def request(payload, wait=True):
 class Engine:
     """Effect composition; the daemon supplies hardware and event inputs."""
     def __init__(self, mode='candle', peak=2):
+        self.native_breathe = True
         self.mode = mode if mode in MODES else 'candle'
         self.peak = max(0, min(3, int(peak)))
         self.last_mode = 'candle'
@@ -180,7 +181,9 @@ class Engine:
                 return quantize(value, self.peak)
             self.overlay = None
         elapsed = now - self.started
-        if self.mode in ('static', 'breathe'):
+        if self.mode == 'breathe' and not self.native_breathe:
+            value = (1 - math.cos(elapsed * math.tau / 4)) / 2
+        elif self.mode in ('static', 'breathe'):
             value = 1.
         elif self.mode == 'heartbeat':
             value = heartbeat(elapsed / 2.)
@@ -218,13 +221,18 @@ class Daemon:
         self.dbus, self.GLib = dbus, GLib
         DBusGMainLoop(set_as_default=True)
         self.bus = dbus.SystemBus()
-        self.aura = dbus.Interface(self.bus.get_object('xyz.ljones.Asusd', '/xyz/ljones/aura/tuf'),
+        self.aura = dbus.Interface(self.bus.get_object('xyz.ljones.Asusd', '/xyz/ljones/aura/tuf', introspect=False),
                                    'org.freedesktop.DBus.Properties')
         self.session = dbus.Interface(self.bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1/session/auto'),
                                       'org.freedesktop.login1.Session')
         props = self.bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1/session/auto')
         self.session_props = dbus.Interface(props, 'org.freedesktop.DBus.Properties')
-        self.original_effect = int(self.aura.Get('xyz.ljones.Aura', 'LedMode', timeout=2))
+        try:
+            self.original_effect = int(self.aura.Get('xyz.ljones.Aura', 'LedMode', timeout=2))
+        except dbus.DBusException:
+            # PX13 has a brightness-only keyboard, without a TUF Aura interface.
+            self.aura = None
+            self.original_effect = 0
         self.original_brightness = int(read_number(LED, 1))
         self.native = self.original_effect
         self.last_level = None
@@ -254,6 +262,7 @@ class Daemon:
         except (OSError, ValueError):
             saved = {}
         self.engine = Engine(saved.get('mode', 'candle'), saved.get('brightness', 2))
+        self.engine.native_breathe = self.aura is not None
         self.engine.workspace_alerts = bool(saved.get('workspace_alerts', True))
         self.engine.battery_alerts = bool(saved.get('battery_alerts', True))
         if self.engine.mode == 'focus':
@@ -290,6 +299,8 @@ class Daemon:
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def set_native(self, mode):
+        if self.aura is None:
+            return
         if self.native != mode:
             self.aura.Set('xyz.ljones.Aura', 'LedMode', self.dbus.UInt32(mode), timeout=2)
             self.native = mode

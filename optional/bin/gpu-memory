@@ -21,13 +21,15 @@ gib = int(sys.argv[1])
 if gib not in (8, 56):
     sys.exit('Only 8 and 56 GiB presets are supported.')
 path = Path('/etc/limine-entry-tool.d/amdgpu-gtt.conf')
-original = path.read_text()
+original = path.read_text() if path.exists() else ''
 active = '\n'.join(line for line in original.splitlines()
                    if line.strip() and not line.lstrip().startswith('#'))
-if not re.fullmatch(r'KERNEL_CMDLINE\[default\]\+="\s*amdgpu\.gttsize=\d+\s+ttm\.pages_limit=\d+\s*"', active):
+if original and not re.fullmatch(r'KERNEL_CMDLINE\[default\]\+="\s*amdgpu\.gttsize=\d+\s+ttm\.pages_limit=\d+\s*"', active):
     sys.exit('GPU Limine configuration has changed; refusing to overwrite it.')
 backup = path.with_name(path.name + '.bak-' + str(time.time_ns()))
-shutil.copy2(path, backup)
+if path.exists():
+    shutil.copy2(path, backup)
+path.parent.mkdir(parents=True, exist_ok=True)
 pages = gib * 1024**3 // os.sysconf('SC_PAGE_SIZE')
 path.write_text(
     '# Shared GPU memory ceiling, allocated on demand, not reserved RAM.\n'
@@ -64,7 +66,10 @@ for device in sorted(Path('/sys/class/drm').glob('card[0-9]*/device')):
         except OSError:
             print(f'  {label}: unavailable')
 print('Configured boot options (apply after limine-update + reboot):')
-for line in Path('/etc/limine-entry-tool.d/amdgpu-gtt.conf').read_text().splitlines():
+config = Path('/etc/limine-entry-tool.d/amdgpu-gtt.conf')
+if not config.exists():
+    print('  No custom limit; using kernel defaults. Select 8 or 56 explicitly to configure.')
+for line in (config.read_text() if config.exists() else '').splitlines():
     if line.startswith('KERNEL_CMDLINE'):
         print(' ', line)
 PY
