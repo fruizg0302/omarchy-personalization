@@ -58,6 +58,8 @@ omarchy plugin enable local.workspace-overview
 
 Headroom and ASUS Control are optional entries in the lock file. The shell layout under `examples/` is a reference, not installed by the staging script; it includes additional independently installed plugins. Merge only entries whose plugins you have installed. Plugin updates may need patch rebasing; the patch helper refuses mismatched revisions and conflicting local changes.
 
+`config/omarchy/branding/screensaver.txt` replaces the screensaver banner with a stacked "NuCaloric Agriculture" logo, sized to fit a 92×27 terminal (ghostty at font size 18 on a 1440×900 display). Leave screensaver plugins that rewrite this file, such as Oligarchy Screensaver, disabled, or they will replace the banner while the screensaver runs.
+
 Download the app icons and install desired native apps:
 
 ```bash

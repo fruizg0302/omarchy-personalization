@@ -88,9 +88,6 @@
   },
   "plugins": [
     {
-      "id": "io.github.fabiopauli.oligarchy-screensaver"
-    },
-    {
       "id": "piyush.omaswitch"
     },
     {
